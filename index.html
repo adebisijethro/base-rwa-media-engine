@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en" data-composition-variables='[{"id":"ground","type":"color","label":"Background","default":"#13131c"},{"id":"accent","type":"color","label":"Indigo Accent","default":"#5366ff"},{"id":"yield","type":"color","label":"Yield Green","default":"#22c55e"}]'>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>Tokeshare — Taco Shop 1,000 Shares</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Space Grotesk";
+        src: url("assets/fonts/SpaceGrotesk.woff2") format("woff2");
+        font-weight: 300 700;
+      }
+      @font-face {
+        font-family: "Raleway";
+        src: url("assets/fonts/Raleway.woff2") format("woff2");
+        font-weight: 100 900;
+      }
+      :root {
+        --ground: #13131c;
+        --card-bg: #1c1c2a;
+        --card-border: rgba(255, 255, 255, 0.08);
+        --accent: #5366ff;
+        --accent-glow: rgba(83, 102, 255, 0.28);
+        --accent-light: #aec0ef;
+        --yield: #22c55e;
+        --yield-bg: rgba(34, 197, 94, 0.12);
+        --ink-primary: #ffffff;
+        --ink-secondary: #9ea3be;
+        --ink-muted: #656986;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--ground);
+        font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: var(--ink-primary);
+        -webkit-font-smoothing: antialiased;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: radial-gradient(circle at 50% 30%, #1d1d2e 0%, #13131c 70%, #0d0d14 100%);
+      }
+
+      /* Grid Floor Visual Motif */
+      .bg-grid {
+        position: absolute;
+        inset: 0;
+        background-image: 
+          linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 80px 80px;
+        mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 80%);
+        pointer-events: none;
+      }
+
+      /* Ambient Radial Glows */
+      .glow-orb {
+        position: absolute;
+        width: 900px;
+        height: 900px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--accent-glow) 0%, rgba(83, 102, 255, 0) 65%);
+        filter: blur(80px);
+        pointer-events: none;
+      }
+      .glow-left { top: -200px; left: -150px; opacity: 0.6; }
+      .glow-right { bottom: -250px; right: -150px; opacity: 0.5; }
+
+      /* Persistent Top Bar */
+      .top-nav {
+        position: absolute;
+        top: 48px;
+        left: 100px;
+        right: 100px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 50;
+      }
+      .brand-badge {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: rgba(28, 28, 42, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--card-border);
+        padding: 10px 22px;
+        border-radius: 999px;
+      }
+      .brand-badge svg { width: 22px; height: 36px; }
+      .brand-badge span {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #fff;
+      }
+      .network-tag {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(83, 102, 255, 0.1);
+        border: 1px solid rgba(83, 102, 255, 0.3);
+        padding: 8px 18px;
+        border-radius: 999px;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--accent-light);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .network-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--yield);
+        box-shadow: 0 0 10px var(--yield);
+      }
+
+      /* Core Stage & Scenes */
+      .scene {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Headline Treatment */
+      .headline-container {
+        position: absolute;
+        top: 150px;
+        text-align: center;
+        z-index: 30;
+      }
+      .category-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--accent-light);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+      .main-headline {
+        margin: 0;
+        font-size: 78px;
+        font-weight: 700;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        color: #ffffff;
+      }
+      .main-headline .highlight {
+        color: transparent;
+        background: linear-gradient(135deg, #ffffff 20%, var(--accent-light) 60%, var(--accent) 100%);
+        -webkit-background-clip: text;
+      }
+      .subhead {
+        margin-top: 12px;
+        font-size: 26px;
+        color: var(--ink-secondary);
+        font-weight: 400;
+      }
+
+      /* --- SCENE 1: THE TACO SHOP ASSET --- */
+      .asset-card {
+        position: absolute;
+        top: 360px;
+        width: 880px;
+        height: 520px;
+        background: linear-gradient(145deg, #212134 0%, #181827 100%);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 28px;
+        box-shadow: 0 35px 80px rgba(0, 0, 0, 0.6), 0 0 50px rgba(83, 102, 255, 0.15);
+        display: flex;
+        overflow: hidden;
+        z-index: 20;
+      }
+      .asset-visual {
+        width: 48%;
+        height: 100%;
+        position: relative;
+        background: linear-gradient(135deg, #2b1f1d 0%, #191316 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .storefront-graphic {
+        position: relative;
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(circle, rgba(239, 68, 68, 0.15) 0%, transparent 70%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .taco-hero-icon {
+        font-size: 110px;
+        filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5));
+      }
+      .store-stamp {
+        position: absolute;
+        bottom: 30px;
+        padding: 6px 14px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #f87171;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .asset-details {
+        width: 52%;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .asset-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+      .asset-title {
+        font-size: 34px;
+        font-weight: 700;
+        margin: 0;
+        color: #ffffff;
+      }
+      .asset-location {
+        font-size: 16px;
+        color: var(--ink-secondary);
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .verified-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(34, 197, 94, 0.15);
+        border: 1px solid rgba(34, 197, 94, 0.4);
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--yield);
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin: 20px 0;
+      }
+      .stat-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 16px 20px;
+      }
+      .stat-label {
+        font-size: 14px;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .stat-val {
+        font-size: 28px;
+        font-weight: 700;
+        margin-top: 4px;
+        color: #ffffff;
+      }
+      .stat-val.green { color: var(--yield); }
+      .token-readiness {
+        padding: 14px 18px;
+        background: rgba(83, 102, 255, 0.1);
+        border: 1px solid rgba(83, 102, 255, 0.25);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .readiness-text {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--accent-light);
+      }
+      .token-supply {
+        font-size: 17px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+
+      /* --- SCENE 2: FRACTIONAL 1,000 SHARES MATRIX --- */
+      .shares-stage {
+        position: absolute;
+        top: 360px;
+        width: 1200px;
+        height: 520px;
+        display: flex;
+        gap: 40px;
+        align-items: center;
+        justify-content: center;
+        z-index: 25;
+      }
+      .token-hero-card {
+        width: 440px;
+        height: 480px;
+        background: linear-gradient(160deg, #232338 0%, #171725 100%);
+        border: 1px solid var(--accent);
+        border-radius: 28px;
+        padding: 36px;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 60px rgba(83, 102, 255, 0.3);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+      }
+      .token-hero-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent), #ffa4fb);
+      }
+      .share-tag {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: var(--accent-light);
+        text-transform: uppercase;
+      }
+      .share-id {
+        font-size: 52px;
+        font-weight: 800;
+        margin: 6px 0;
+        color: #ffffff;
+        letter-spacing: -0.02em;
+      }
+      .share-ratio {
+        font-size: 20px;
+        color: var(--ink-secondary);
+      }
+      .share-price-box {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .share-price-num {
+        font-size: 38px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+      .share-smart-contract {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--ink-muted);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 16px;
+      }
+      .contract-hash {
+        font-family: monospace;
+        color: var(--accent-light);
+      }
+
+      /* Fractional Stack Visual */
+      .tokens-matrix {
+        width: 680px;
+        height: 480px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 16px;
+        perspective: 1000px;
+      }
+      .matrix-cell {
+        background: rgba(28, 28, 44, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 14px;
+        position: relative;
+        transition: border-color 0.3s;
+      }
+      .matrix-cell.active-glow {
+        border-color: var(--accent);
+        box-shadow: 0 0 25px rgba(83, 102, 255, 0.25);
+        background: rgba(83, 102, 255, 0.08);
+      }
+      .cell-icon { font-size: 24px; margin-bottom: 6px; }
+      .cell-num { font-size: 16px; font-weight: 700; color: #fff; }
+      .cell-pct { font-size: 12px; color: var(--ink-secondary); }
+
+      /* --- SCENE 3: REAL-WORLD DIVIDENDS & STABLECOINS --- */
+      .yield-stage {
+        position: absolute;
+        top: 360px;
+        width: 1240px;
+        height: 520px;
+        display: flex;
+        gap: 40px;
+        align-items: center;
+        justify-content: center;
+        z-index: 30;
+      }
+      .pos-terminal-card {
+        width: 480px;
+        height: 480px;
+        background: #191928;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 28px;
+        padding: 36px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+      }
+      .pos-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .pos-badge {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #f87171;
+        background: rgba(239, 68, 68, 0.12);
+        padding: 4px 12px;
+        border-radius: 999px;
+      }
+      .pos-order-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px dashed rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .order-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 16px;
+        margin-bottom: 8px;
+        color: var(--ink-secondary);
+      }
+      .order-total {
+        display: flex;
+        justify-content: space-between;
+        font-size: 26px;
+        font-weight: 700;
+        color: #ffffff;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 12px;
+        margin-top: 12px;
+      }
+      .auto-routing {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(34, 197, 94, 0.08);
+        border: 1px solid rgba(34, 197, 94, 0.25);
+        padding: 12px 18px;
+        border-radius: 14px;
+        color: var(--yield);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      /* Wallet Payout Card */
+      .wallet-payout-card {
+        width: 580px;
+        height: 480px;
+        background: linear-gradient(155deg, #1b2820 0%, #151a1e 100%);
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        border-radius: 28px;
+        padding: 38px;
+        box-shadow: 0 35px 80px rgba(0, 0, 0, 0.7), 0 0 60px rgba(34, 197, 94, 0.18);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+      }
+      .usdc-glow-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: #2775ca;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 34px;
+        font-weight: 800;
+        color: #ffffff;
+        box-shadow: 0 10px 30px rgba(39, 117, 202, 0.4);
+      }
+      .payout-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .payout-title {
+        font-size: 26px;
+        font-weight: 700;
+        margin: 0;
+        color: #ffffff;
+      }
+      .payout-sub {
+        font-size: 15px;
+        color: var(--ink-secondary);
+        margin-top: 4px;
+      }
+      .dividend-amount-box {
+        margin: 18px 0;
+        padding: 24px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        border-radius: 20px;
+      }
+      .dividend-number {
+        font-size: 60px;
+        font-weight: 800;
+        color: var(--yield);
+        letter-spacing: -0.02em;
+        line-height: 1;
+      }
+      .dividend-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 14px;
+        font-size: 15px;
+        color: var(--ink-secondary);
+      }
+      .yield-pill {
+        background: var(--yield);
+        color: #0b1d12;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 14px;
+      }
+      .wallet-dest {
+        font-size: 14px;
+        color: var(--ink-muted);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 16px;
+      }
+
+      /* --- SCENE 4: BRAND OUTRO & CTA --- */
+      .brand-outro {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 40;
+        text-align: center;
+      }
+      .outro-mark {
+        width: 110px;
+        height: 110px;
+        margin-bottom: 24px;
+        filter: drop-shadow(0 20px 40px rgba(83, 102, 255, 0.4));
+      }
+      .outro-title {
+        font-size: 92px;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        margin: 0;
+        color: #ffffff;
+      }
+      .outro-tagline {
+        font-size: 32px;
+        font-weight: 500;
+        color: var(--accent-light);
+        margin-top: 12px;
+        letter-spacing: -0.01em;
+      }
+      .cta-button {
+        margin-top: 44px;
+        display: inline-flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px 48px;
+        background: var(--accent);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 999px;
+        color: #ffffff;
+        font-size: 26px;
+        font-weight: 700;
+        box-shadow: 0 15px 45px rgba(83, 102, 255, 0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-shine {
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transform: skewX(-20deg);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="10" data-width="1920" data-height="1080">
+      <div class="bg-grid"></div>
+      <div class="glow-orb glow-left"></div>
+      <div class="glow-orb glow-right"></div>
+
+      <!-- Top Navigation Header -->
+      <header class="top-nav">
+        <div class="brand-badge">
+          <!-- Tokeshare Official SVG Icon -->
+          <svg viewBox="0 0 51.34 85.87" fill="none">
+            <path fill="#AEC0EF" d="M16.94,0C15.79,8.85,8.85,15.98,0,17.13v17.36c18.97,0,34.27-15.4,34.27-34.37L16.94,0z"/>
+            <path fill="#AEC0EF" d="M34.29,34.49h17.05V17.13H34.39h-0.1h-0.02c-3.45,7.47-9.63,13.65-17.13,17.06v0.15l-0.02,3.02l0.02,0v14.34c-0.33,18.97,15.23,33.76,34.2,34.1V68.74c-8.83-1.31-16.07-8.18-17.07-17.05V37.19L34.29,34.49z"/>
+            <circle fill="#3956FF" cx="8.57" cy="77.31" r="8.57"/>
+          </svg>
+          <span>Tokeshare</span>
+        </div>
+        <div class="network-tag">
+          <span class="network-dot"></span>
+          <span>RWA Tokenization Engine</span>
+        </div>
+      </header>
+
+      <!-- Dynamic Persistent Stage Area -->
+
+      <!-- SCENE 1: THE TACO SHOP (0.0s - 2.6s) -->
+      <section id="scene-1" class="clip scene" data-start="0" data-duration="2.7">
+        <div class="headline-container" id="s1-headline">
+          <div class="category-pill">Real-World Asset #049</div>
+          <h1 class="main-headline">A beloved local <span class="highlight">taco shop.</span></h1>
+          <div class="subhead">Generating reliable daily cash flow in Mexico City</div>
+        </div>
+
+        <div class="asset-card" id="s1-card">
+          <div class="asset-visual">
+            <div class="storefront-graphic">
+              <div class="taco-hero-icon">🌮</div>
+            </div>
+            <div class="store-stamp">Active Business · Verified</div>
+          </div>
+          <div class="asset-details">
+            <div class="asset-header">
+              <div>
+                <h2 class="asset-title">El Fuego Taquería</h2>
+                <div class="asset-location">📍 Roma Norte, CDMX</div>
+              </div>
+              <div class="verified-badge">✓ Securitized</div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-box">
+                <div class="stat-label">Total Asset Value</div>
+                <div class="stat-val">$250,000</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Daily Revenue</div>
+                <div class="stat-val green">$1,420 / day</div>
+              </div>
+            </div>
+            <div class="token-readiness">
+              <span class="readiness-text">Tokenization Structure:</span>
+              <span class="token-supply">1,000 Total Shares</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 2: SPLIT INTO 1,000 SHARES (2.5s - 5.3s) -->
+      <section id="scene-2" class="clip scene" data-start="2.5" data-duration="2.8" style="opacity: 0;">
+        <div class="headline-container" id="s2-headline">
+          <div class="category-pill">Fractional Ownership</div>
+          <h1 class="main-headline">Split into <span class="highlight">1,000 on-chain shares.</span></h1>
+          <div class="subhead">Each digital share backed 1:1 by real business equity</div>
+        </div>
+
+        <div class="shares-stage" id="s2-stage">
+          <div class="token-hero-card" id="s2-hero-card">
+            <div>
+              <div class="share-tag">Tokenized Certificate</div>
+              <div class="share-id">SHARE #001</div>
+              <div class="share-ratio">Represents 0.1% Business Equity</div>
+            </div>
+            <div class="share-price-box">
+              <div class="stat-label">Entry Price</div>
+              <div class="share-price-num">$250 <span style="font-size:20px; font-weight:400; color:var(--ink-secondary);">/ share</span></div>
+            </div>
+            <div class="share-smart-contract">
+              <span>Smart Contract (Stellar/Base)</span>
+              <span class="contract-hash">0x7F2e...A9B4</span>
+            </div>
+          </div>
+
+          <div class="tokens-matrix" id="s2-matrix">
+            <div class="matrix-cell active-glow"><div class="cell-icon">📜</div><div class="cell-num">#001</div><div class="cell-pct">0.10%</div></div>
+            <div class="matrix-cell"><div class="cell-icon">📜</div><div class="cell-num">#002</div><div class="cell-pct">0.10%</div></div>
+            <div class="matrix-cell"><div class="cell-icon">📜</div><div class="cell-num">#003</div><div class="cell-pct">0.10%</div></div>
+            <div class="matrix-cell"><div class="cell-icon">📜</div><div class="cell-num">#004</div><div class="cell-pct">0.10%</div></div>
+            <div class="matrix-cell"><div class="cell-icon">📜</div><div class="cell-num">#005</div><div class="cell-pct">0.10%</div></div>
+            <div class="matrix-cell"><div class="cell-icon">📜</div><div class="cell-num">#006</div><div class="cell-pct">0.10%</div></div>
+            <div class="matrix-cell"><div class="cell-icon">📜</div><div class="cell-num">#007</div><div class="cell-pct">0.10%</div></div>
+            <div class="matrix-cell"><div class="cell-icon">📜</div><div class="cell-num">#008</div><div class="cell-pct">0.10%</div></div>
+            <div class="matrix-cell"><div class="cell-icon">📜</div><div class="cell-num">#009</div><div class="cell-pct">0.10%</div></div>
+            <div class="matrix-cell"><div class="cell-icon">📜</div><div class="cell-num">#010</div><div class="cell-pct">0.10%</div></div>
+            <div class="matrix-cell"><div class="cell-icon">📜</div><div class="cell-num">...</div><div class="cell-pct">0.10%</div></div>
+            <div class="matrix-cell active-glow"><div class="cell-icon">📜</div><div class="cell-num">#1,000</div><div class="cell-pct">0.10%</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 3: PAYING HOLDERS IN STABLECOINS (5.1s - 7.9s) -->
+      <section id="scene-3" class="clip scene" data-start="5.1" data-duration="2.8" style="opacity: 0;">
+        <div class="headline-container" id="s3-headline">
+          <div class="category-pill">Automated Cash Flow</div>
+          <h1 class="main-headline">Paying holders in <span class="highlight">stablecoins.</span></h1>
+          <div class="subhead">Real customer sales streamed directly to on-chain wallets</div>
+        </div>
+
+        <div class="yield-stage" id="s3-stage">
+          <!-- Taco POS Register Simulation -->
+          <div class="pos-terminal-card" id="s3-pos">
+            <div>
+              <div class="pos-top">
+                <span style="font-weight:700; font-size:18px;">🏪 Taco Shop POS Register</span>
+                <span class="pos-badge">Live Sale</span>
+              </div>
+              <div class="pos-order-box">
+                <div class="order-row"><span>4x Tacos al Pastor</span><span>$12.00</span></div>
+                <div class="order-row"><span>2x Horchata</span><span>$6.50</span></div>
+                <div class="order-total"><span>Total Sale</span><span style="color:var(--yield);">+$18.50</span></div>
+              </div>
+            </div>
+            <div class="auto-routing">
+              <span>⚡</span>
+              <span>Smart Contract automatically splits net profits to token holders</span>
+            </div>
+          </div>
+
+          <!-- Payout Stream Card -->
+          <div class="wallet-payout-card" id="s3-payout">
+            <div class="payout-header">
+              <div class="usdc-glow-icon">$</div>
+              <div>
+                <h3 class="payout-title">Dividend Payment Received</h3>
+                <div class="payout-sub">Monthly Shareholder Distribution · USDC</div>
+              </div>
+            </div>
+
+            <div class="dividend-amount-box">
+              <div style="font-size:15px; color:var(--ink-secondary); margin-bottom:6px;">Your 10 Shares Earned:</div>
+              <div class="dividend-number" id="s3-counter">+$42.80 <span style="font-size:32px; font-weight:600; color:#fff;">USDC</span></div>
+              <div class="dividend-meta">
+                <span>Distribution #12</span>
+                <span class="yield-pill">+14.2% APY Yield</span>
+              </div>
+            </div>
+
+            <div class="wallet-dest">
+              <span>Status: <strong style="color:var(--yield);">Confirmed on-chain</strong></span>
+              <span>Paid to: 0x81b...4f92</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 4: TOKESHARE BRAND OUTRO & CTA (7.7s - 10.0s) -->
+      <section id="scene-4" class="clip brand-outro" data-start="7.7" data-duration="2.3" style="opacity: 0;">
+        <svg class="outro-mark" viewBox="0 0 51.34 85.87" fill="none">
+          <path fill="#AEC0EF" d="M16.94,0C15.79,8.85,8.85,15.98,0,17.13v17.36c18.97,0,34.27-15.4,34.27-34.37L16.94,0z"/>
+          <path fill="#AEC0EF" d="M34.29,34.49h17.05V17.13H34.39h-0.1h-0.02c-3.45,7.47-9.63,13.65-17.13,17.06v0.15l-0.02,3.02l0.02,0v14.34c-0.33,18.97,15.23,33.76,34.2,34.1V68.74c-8.83-1.31-16.07-8.18-17.07-17.05V37.19L34.29,34.49z"/>
+          <circle fill="#3956FF" cx="8.57" cy="77.31" r="8.57"/>
+        </svg>
+        <h1 class="outro-title">Tokeshare</h1>
+        <p class="outro-tagline">Real-world assets. Tokenized on-chain.</p>
+        <div class="cta-button" id="s4-cta">
+          <span>Explore Marketplace at tokeshare.co</span>
+          <span>→</span>
+          <div class="cta-shine" id="s4-shine"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- GSAP Single Paused Master Timeline -->
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // ============================================
+      // BEAT 1: A TACO SHOP (0.0s - 2.5s)
+      // ============================================
+      tl.fromTo("#s1-headline", 
+        { y: -30, opacity: 0 }, 
+        { y: 0, opacity: 1, duration: 0.65, ease: "power3.out" }, 
+        0.1
+      );
+      tl.fromTo("#s1-card", 
+        { y: 60, scale: 0.94, opacity: 0 }, 
+        { y: 0, scale: 1, opacity: 1, duration: 0.85, ease: "power3.out" }, 
+        0.3
+      );
+      // Gentle camera push
+      tl.to("#s1-card", { scale: 1.03, y: -10, duration: 1.4, ease: "none" }, 1.15);
+
+      // Transition out Beat 1 -> Beat 2
+      tl.to("#scene-1", 
+        { scale: 0.92, opacity: 0, duration: 0.45, ease: "power2.in" }, 
+        2.3
+      );
+
+      // ============================================
+      // BEAT 2: SPLIT INTO 1,000 SHARES (2.5s - 5.1s)
+      // ============================================
+      tl.set("#scene-2", { opacity: 1 }, 2.5);
+      tl.fromTo("#s2-headline", 
+        { y: -30, opacity: 0 }, 
+        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 
+        2.55
+      );
+      tl.fromTo("#s2-hero-card", 
+        { x: -80, opacity: 0, rotateY: 15 }, 
+        { x: 0, opacity: 1, rotateY: 0, duration: 0.75, ease: "power3.out" }, 
+        2.7
+      );
+      tl.fromTo(".matrix-cell", 
+        { scale: 0.6, opacity: 0, y: 30 }, 
+        { scale: 1, opacity: 1, y: 0, stagger: 0.04, duration: 0.5, ease: "back.out(1.4)" }, 
+        2.85
+      );
+      // Subtle float motion
+      tl.to("#s2-stage", { y: -15, duration: 1.5, ease: "none" }, 3.5);
+
+      // Transition out Beat 2 -> Beat 3
+      tl.to("#scene-2", 
+        { y: -40, opacity: 0, duration: 0.45, ease: "power2.in" }, 
+        4.9
+      );
+
+      // ============================================
+      // BEAT 3: PAYING IN STABLECOINS (5.1s - 7.7s)
+      // ============================================
+      tl.set("#scene-3", { opacity: 1 }, 5.1);
+      tl.fromTo("#s3-headline", 
+        { y: -30, opacity: 0 }, 
+        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 
+        5.15
+      );
+      tl.fromTo("#s3-pos", 
+        { x: -60, opacity: 0 }, 
+        { x: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, 
+        5.3
+      );
+      tl.fromTo("#s3-payout", 
+        { x: 70, opacity: 0, scale: 0.95 }, 
+        { x: 0, opacity: 1, scale: 1, duration: 0.75, ease: "power3.out" }, 
+        5.5
+      );
+      // Payout pulse and count settlement
+      tl.fromTo("#s3-counter", 
+        { scale: 0.9 }, 
+        { scale: 1.08, duration: 0.35, ease: "power2.out" }, 
+        6.1
+      );
+      tl.to("#s3-counter", { scale: 1.0, duration: 0.3, ease: "power2.inOut" }, 6.45);
+      tl.to("#s3-stage", { scale: 1.02, duration: 1.1, ease: "none" }, 6.5);
+
+      // Transition out Beat 3 -> Beat 4
+      tl.to("#scene-3", 
+        { scale: 0.95, opacity: 0, duration: 0.45, ease: "power2.in" }, 
+        7.55
+      );
+
+      // ============================================
+      // BEAT 4: BRAND REVEAL & CTA (7.7s - 10.0s)
+      // ============================================
+      tl.set("#scene-4", { opacity: 1 }, 7.7);
+      tl.fromTo(".outro-mark", 
+        { scale: 0.5, opacity: 0, y: -20 }, 
+        { scale: 1, opacity: 1, y: 0, duration: 0.7, ease: "back.out(1.6)" }, 
+        7.75
+      );
+      tl.fromTo(".outro-title", 
+        { y: 25, opacity: 0 }, 
+        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 
+        7.9
+      );
+      tl.fromTo(".outro-tagline", 
+        { y: 20, opacity: 0 }, 
+        { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 
+        8.05
+      );
+      tl.fromTo("#s4-cta", 
+        { scale: 0.85, opacity: 0, y: 20 }, 
+        { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.5)" }, 
+        8.2
+      );
+      // CTA Light Sheen
+      tl.fromTo("#s4-shine", 
+        { left: "-100%" }, 
+        { left: "150%", duration: 0.85, ease: "power2.inOut" }, 
+        8.8
+      );
+
+      // Register timeline to HyperFrames
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
+
