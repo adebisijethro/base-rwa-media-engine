@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, height=1920, initial-scale=1.0">
+  <title>USDC Yield Receipt Visualizer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Space Grotesk';
+      src: url('./assets/fonts/SpaceGrotesk.woff2') format('woff2');
+      font-weight: 400 700;
+    }
+    @font-face {
+      font-family: 'Instrument Serif';
+      src: url('./assets/fonts/InstrumentSerif-Regular.woff2') format('woff2');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'Instrument Serif Italic';
+      src: url('./assets/fonts/InstrumentSerif-Italic.woff2') format('woff2');
+      font-style: italic;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 1080px;
+      height: 1920px;
+      background: #08080c;
+      color: #ffffff;
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Ambient background grid & glow */
+    .bg-glow {
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(0, 82, 255, 0.25) 0%, rgba(34, 197, 94, 0.15) 50%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      filter: blur(80px);
+      z-index: 1;
+    }
+
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 2;
+    }
+
+    /* The Main Receipt Card */
+    .receipt-card {
+      position: relative;
+      z-index: 10;
+      width: 920px;
+      background: rgba(18, 18, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 40px;
+      padding: 70px 60px;
+      backdrop-filter: blur(40px);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), 0 0 60px rgba(0, 82, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Card Top Bar */
+    .top-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(0, 82, 255, 0.15);
+      border: 1px solid rgba(0, 82, 255, 0.4);
+      padding: 12px 28px;
+      border-radius: 999px;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #3b82f6;
+      margin-bottom: 40px;
+    }
+
+    .pulse-dot {
+      width: 14px;
+      height: 14px;
+      background: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 16px #22c55e;
+    }
+
+    .asset-title {
+      font-family: 'Instrument Serif Italic', serif;
+      font-size: 64px;
+      line-height: 1.1;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+
+    .asset-sub {
+      font-size: 26px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 50px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Payout Matrix Container */
+    .payout-box {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 30px;
+      padding: 50px 40px;
+      margin-bottom: 50px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .payout-label {
+      font-size: 24px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(255, 255, 255, 0.45);
+      margin-bottom: 15px;
+    }
+
+    .payout-amount {
+      font-size: 104px;
+      font-weight: 700;
+      color: #22c55e;
+      text-shadow: 0 0 40px rgba(34, 197, 94, 0.4);
+      letter-spacing: -0.02em;
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 16px;
+    }
+
+    .payout-currency {
+      font-size: 38px;
+      color: #3b82f6;
+      font-weight: 600;
+    }
+
+    .apy-pill {
+      display: inline-block;
+      margin-top: 25px;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #22c55e;
+      padding: 8px 24px;
+      border-radius: 999px;
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    /* Detail Rows */
+    .info-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 50px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 26px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 18px;
+    }
+
+    .info-label {
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .info-val {
+      font-weight: 600;
+      color: #ffffff;
+      font-family: monospace;
+    }
+
+    /* Bottom Verification Footer */
+    .receipt-footer {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 20px;
+    }
+
+    .network-badge {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 24px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .base-dot {
+      width: 22px;
+      height: 22px;
+      background: #0052FF;
+      border-radius: 6px;
+    }
+
+    .verified-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #22c55e;
+      font-size: 22px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div class="grid-lines"></div>
+
+  <div class="receipt-card" id="card">
+    <div class="top-badge">
+      <div class="pulse-dot"></div>
+      <span>Base On-Chain Payout</span>
+    </div>
+
+    <h1 class="asset-title">Taquería El Pastor #104</h1>
+    <div class="asset-sub">Real-World Asset #0084 · Revenue Share</div>
+
+    <div class="payout-box">
+      <div class="payout-label">USDC Dividends Credited</div>
+      <div class="payout-amount">
+        <span id="amount-val">$0.00</span>
+        <span class="payout-currency">USDC</span>
+      </div>
+      <div class="apy-pill">14.8% Net Annualized APY</div>
+    </div>
+
+    <div class="info-list">
+      <div class="info-row">
+        <span class="info-label">Recipient Wallet</span>
+        <span class="info-val">0x1d2f...a31e</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Shares Owned</span>
+        <span class="info-val">120 / 1,000 Shares (12.0%)</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Distribution Period</span>
+        <span class="info-val">October 2026 POS Revenue</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Settlement Network</span>
+        <span class="info-val" style="color: #3b82f6;">Base Mainnet (8453)</span>
+      </div>
+    </div>
+
+    <div class="receipt-footer">
+      <div class="network-badge">
+        <div class="base-dot"></div>
+        <span>Built on Base</span>
+      </div>
+      <div class="verified-badge">
+        <span>✓ Attested via Karma</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    window.__timelines = { receipt: tl };
+
+    // Counter animation object
+    const counter = { val: 0 };
+    const targetAmount = 142.50;
+    const amountEl = document.getElementById("amount-val");
+
+    tl.fromTo("#card", 
+      { opacity: 0, y: 80, scale: 0.94 }, 
+      { opacity: 1, y: 0, scale: 1, duration: 1.0, ease: "power3.out" }, 
+      0
+    )
+    .to(counter, {
+      val: targetAmount,
+      duration: 2.2,
+      ease: "power2.out",
+      onUpdate: () => {
+        amountEl.textContent = "$" + counter.val.toFixed(2);
+      }
+    }, 0.8)
+    .fromTo(".info-row", 
+      { opacity: 0, x: -30 }, 
+      { opacity: 1, x: 0, stagger: 0.15, duration: 0.8, ease: "power2.out" }, 
+      1.5
+    )
+    .fromTo(".receipt-footer", 
+      { opacity: 0 }, 
+      { opacity: 1, duration: 0.8, ease: "power1.out" }, 
+      2.5
+    );
+
+    // Duration is 6.0 seconds
+    tl.to({}, { duration: 2.5 }); // hold until 6.0s
+  </script>
+</body>
+</html>

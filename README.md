@@ -19,13 +19,20 @@ Rather than spending 2–3 weeks and thousands of dollars on manual video editin
 
 ---
 
-## 📽️ Deliverable 1 Verification Artifacts
+## 📽️ Deliverable Artifacts
 
+### Milestone 1: Base RWA Programmatic Video Renderer (COMPLETED ✅)
 * **Master 1080p MP4 Render (with Audio):** `renders/tokeshare_taco_shop_10s_with_audio.mp4` (2.10 MB)
 * **Silent 1080p MP4 Render:** `renders/tokeshare_taco_shop_10s.mp4` (1.96 MB)
 * **High-Res Animated GIF Preview:** `renders/tokeshare_taco_shop_preview.gif` (3.20 MB)
 * **Storyboard Stills:** `boards/stills/` (`frame-00-at-1.2s.png` through `frame-03-at-8.8s.png`)
 * **Interactive Storyboard Viewer:** `boards/storyboard.html`
+
+### Milestone 2: Automated USDC Yield Receipt Visualizer (COMPLETED ✅)
+* **Master Vertical 9:16 Video Receipt (with Audio):** `renders/usdc_yield_receipt.mp4` (596 KB)
+* **Animated Social Preview GIF (360x640):** `renders/usdc_yield_receipt_preview.gif` (625 KB)
+* **Dynamic Receipt Template:** `receipt.html` (1080x1920 vertical canvas, GSAP timeline with animated counter tick-up, live APY calculation, and Base Mainnet settlement verification)
+* **Automated Receipt Render Script:** `scripts/render-receipt.mjs`
 
 ---
 
@@ -36,12 +43,17 @@ Rather than spending 2–3 weeks and thousands of dollars on manual video editin
 - Google Chrome installed (`/Applications/Google Chrome.app`)
 - FFmpeg installed (`brew install ffmpeg`)
 
-### 1. Render Video
+### 1. Render Asset Video (Milestone 1)
 ```bash
 node scripts/render.mjs
 ```
 
-### 2. Capture Storyboard Stills
+### 2. Render Vertical USDC Yield Receipt (Milestone 2)
+```bash
+node scripts/render-receipt.mjs
+```
+
+### 3. Capture Storyboard Stills
 ```bash
 node scripts/snapshot.mjs
 ```
