@@ -34,6 +34,14 @@ Rather than spending 2–3 weeks and thousands of dollars on manual video editin
 * **Dynamic Receipt Template:** `receipt.html` (1080x1920 vertical canvas, GSAP timeline with animated counter tick-up, live APY calculation, and Base Mainnet settlement verification)
 * **Automated Receipt Render Script:** `scripts/render-receipt.mjs`
 
+### Milestone 3 / Filecoin Deliverable: Automated IPFS Pinning & CID Registry (COMPLETED ✅)
+* **Verifiable Metadata Bundle:** `metadata/rwa_asset_0084.json`
+* **Filecoin / IPFS Registry Index:** `metadata/registry.json`
+* **Explainer Video CID:** [`bafkreibmynts3yipet7y5cjjies7xos33suc54xyhiafkgwk3vrm7aapb4`](https://ipfs.io/ipfs/bafkreibmynts3yipet7y5cjjies7xos33suc54xyhiafkgwk3vrm7aapb4)
+* **Yield Receipt CID:** [`bafkreicho7qc6gqavium3blp2u5lkwgvupmcivdcsjscz27xtotc3wjbkm`](https://ipfs.io/ipfs/bafkreicho7qc6gqavium3blp2u5lkwgvupmcivdcsjscz27xtotc3wjbkm)
+* **Asset Metadata CID:** [`bafkreia3z6e3rfm3zncouozyfrfmp4thgmu5vpdpw5jnzxbcalv7i74nqu`](https://ipfs.io/ipfs/bafkreia3z6e3rfm3zncouozyfrfmp4thgmu5vpdpw5jnzxbcalv7i74nqu)
+* **Developer SDK:** `sdk/index.mjs` (Programmatic Node.js SDK for headless video rendering & IPFS pinning)
+
 ---
 
 ## 📦 How to Run the Renderer

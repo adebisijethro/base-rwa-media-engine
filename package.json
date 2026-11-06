@@ -1,17 +1,21 @@
 {
   "name": "base-rwa-media-engine",
-  "version": "1.0.0",
-  "description": "Open-source programmatic video rendering engine for tokenized Real-World Assets (RWA) on Base",
+  "version": "1.1.0",
+  "description": "Open-source programmatic video rendering engine and verifiable IPFS metadata registry for tokenized Real-World Assets (RWA) on Base",
   "author": "Jethro Adebisi <adebisireuel@gmail.com>",
   "license": "MIT",
+  "main": "./sdk/index.mjs",
+  "type": "module",
   "homepage": "https://github.com/adebisijethro/base-rwa-media-engine#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/adebisijethro/base-rwa-media-engine.git"
   },
   "scripts": {
-    "render": "node scripts/render.mjs",
-    "snapshot": "node scripts/snapshot.mjs"
+    "render:explainer": "node scripts/render.mjs",
+    "render:receipt": "node scripts/render-receipt.mjs",
+    "snapshot": "node scripts/snapshot.mjs",
+    "ipfs:registry": "node scripts/ipfs-registry.mjs"
   },
   "dependencies": {
     "puppeteer-core": "^22.0.0"

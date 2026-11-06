@@ -1,0 +1,15 @@
+{
+  "lastUpdated": "2026-11-06T02:43:12.035Z",
+  "totalAssetsIndexed": 1,
+  "registryCID": "bafkreia3z6e3rfm3zncouozyfrfmp4thgmu5vpdpw5jnzxbcalv7i74nqu",
+  "ipfsRegistryUrl": "https://ipfs.io/ipfs/bafkreia3z6e3rfm3zncouozyfrfmp4thgmu5vpdpw5jnzxbcalv7i74nqu",
+  "assets": [
+    {
+      "assetId": "RWA-0084",
+      "name": "Taquería El Pastor #104",
+      "metadataCID": "bafkreia3z6e3rfm3zncouozyfrfmp4thgmu5vpdpw5jnzxbcalv7i74nqu",
+      "videoCID": "bafkreibmynts3yipet7y5cjjies7xos33suc54xyhiafkgwk3vrm7aapb4",
+      "receiptCID": "bafkreicho7qc6gqavium3blp2u5lkwgvupmcivdcsjscz27xtotc3wjbkm"
+    }
+  ]
+}
